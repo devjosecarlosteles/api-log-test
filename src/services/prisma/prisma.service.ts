@@ -1,14 +1,28 @@
-import pkg from "@prisma/client";
+const { PrismaClient } = require("@prisma/client");
 
-const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.$connect();
+  try {
+    await prisma.$connect();
+    // const data = await prisma.$queryRaw`SELECT 1`;
+  } catch (error: any) {
+    // log error
+    console.log(error);
+    console.log("keys: ", Object.keys(error));
+    console.log("error.errorCode: ", error.errorCode);
+    console.log("error.code: ", error.code);
+    console.error(JSON.stringify(error, null, 2));
+  }
 }
 
-export default prisma;
-
 main()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect());
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+export default prisma;
