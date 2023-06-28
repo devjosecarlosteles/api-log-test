@@ -3,21 +3,22 @@ import { Request, Response } from "express";
 
 export class UsersController {
   async create(req: Request, res: Response) {
+    const {
+      body: { name },
+    } = req;
+
     const user = await prisma.users.create({
       data: {
-        name: "Jhon",
+        name,
+        Logs: {
+          create: {
+            message: `usuário: ${name} criado com sucesso`,
+          },
+        },
       },
+      include: { Logs: true },
     });
 
-    // await prismaService.logs.create({
-    //   data: {
-    //     message: `usuário ${user.name} - criado com sucesso`,
-    //     userId: user.id,
-    //   },
-    // });
-
-    // console.log(await prismaService.users.findMany());
-
-    return res.status(201).json(user);
+    return res.status(201).json({ user });
   }
 }
